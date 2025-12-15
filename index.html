@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HalalGPT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        #output {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+        textarea {
+            width: 100%;
+            resize: vertical;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 12px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>HalalGPT</h1>
+
+<pre id="output">Ask anything</pre>
+
+<form>
+    <textarea id="myinput" rows="3" placeholder="Type your question here..."></textarea><br>
+    <button type="submit" onclick="ask(event)">Submit</button>
+</form>
+
+<script src="https://js.puter.com/v2/"></script>
+
+<script>
+    // Typing effect function
+    function typeText(element, text, speed = 30) {
+        if (!text) return;
+        element.textContent = "";
+        let i = 0;
+        const interval = setInterval(() => {
+            element.textContent += text[i];
+            i++;
+            if (i >= text.length) clearInterval(interval);
+        }, speed);
+    }
+
+    async function ask(event) {
+        event.preventDefault();
+        const inputElement = document.getElementById('myinput');
+        const question = inputElement.value.trim();
+        const output = document.getElementById("output");
+
+        if (!question) {
+            output.textContent = "Assalamualaikum! Please type a question.";
+            return;
+        }
+
+        output.textContent = "Loading...";
+
+        const prompt = `
+(If no question is given, you may greet the user ["Assalamalekum"].)
+You are a practicing Muslim answering strictly according to Islamic law.
+You must NOT give medical, secular, or personal opinion advice.
+Answer like an imam (using Muslim terms like "Subhanallah", "Alhumdilillah", "Astaghfirallah", "Mashallah")
+
+Get answers from the Qur'an or hadiths if possible.
+
+Answer concisely and directly.
+Question: ${question}
+`;
+
+        try {
+            const response = await puter.ai.chat(prompt, { model: "gpt-5-nano" });
+
+            // Extract the actual AI text safely
+            const text = response?.message?.content || "No response from AI";
+
+            typeText(output, text, 30); // typing effect
+        } catch (err) {
+            console.error(err);
+            output.textContent = "Error occurred. Check console.";
+        }
+    }
+</script>
+
+</body>
+</html>
